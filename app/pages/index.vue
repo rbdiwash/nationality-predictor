@@ -106,6 +106,26 @@
         <span class="font-medium">{{ error }}</span>
       </div>
 
+      <!-- No Results Message -->
+      <div
+        v-if="apiHit && results && results.length === 0 && name"
+        class="mb-8 p-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl shadow-lg animate-slide-up"
+      >
+        <div class="text-center">
+          <div class="text-6xl mb-4">🔍</div>
+          <h3 class="text-2xl font-bold text-slate-900 mb-2">
+            No Results Found
+          </h3>
+          <p class="text-lg text-slate-700 mb-4">
+            We couldn't find any nationality predictions for
+            <span class="font-semibold text-indigo-600">"{{ name }}"</span>
+          </p>
+          <p class="text-sm text-slate-600">
+            Try entering a different name or check the spelling.
+          </p>
+        </div>
+      </div>
+    
       <!-- Insight Section -->
       <div
         v-if="insight && !loading && showInsight"
@@ -239,7 +259,7 @@
 
       <!-- Empty State -->
       <div
-        v-if="!results && !loading && !error"
+        v-if="!results && !loading && !error && !name"
         class="text-center py-16 lg:py-24"
       >
         <div class="max-w-md mx-auto">
@@ -281,6 +301,7 @@ const config = useRuntimeConfig();
 const backendUrl = config?.public?.backendUrl;
 const insight = ref<string>("");
 const showInsight = ref(false);
+const apiHit = ref(false);
 
 const pieStyle = (probability: number, isTop: boolean) => {
   const percent = Math.max(0, Math.min(probability * 100, 100));
@@ -312,8 +333,8 @@ const handleSubmit = async () => {
       throw new Error("Failed to fetch prediction");
     }
     const data = await response.json();
-    results.value = data.countries;
-    insight.value = data.insight;
+    results.value = data.countries || [];
+    apiHit.value = true;
   } catch (err) {
     console.error("Error:", err);
     error.value = "Something went wrong. Please try again.";
@@ -347,8 +368,9 @@ const handleSubmitWithInsight = async () => {
       throw new Error("Failed to fetch prediction");
     }
     const data = await response.json();
-    results.value = data.countries;
-    insight.value = data.insight;
+    results.value = data.countries || [];
+    insight.value = data.insight || "";
+    apiHit.value = true;
   } catch (err) {
     console.error("Error:", err);
     error.value = "Something went wrong. Please try again.";
@@ -529,8 +551,6 @@ const getCountryName = (countryId: string): string => {
     VU: "Vanuatu",
     // Russia & Central Asia
     RU: "Russia",
-    KZ: "Kazakhstan",
-    UZ: "Uzbekistan",
     TJ: "Tajikistan",
     KG: "Kyrgyzstan",
     TM: "Turkmenistan",
