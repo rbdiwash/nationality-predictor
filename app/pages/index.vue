@@ -56,6 +56,7 @@
                     placeholder="e.g., John, Maria, Ahmed"
                     class="w-full px-5 py-4 text-base bg-white/95 backdrop-blur-sm border-2 border-white/20 rounded-xl transition-all duration-300 focus:outline-none focus:border-white focus:ring-4 focus:ring-white/30 text-slate-900 placeholder:text-slate-400"
                     required
+                    @change="handleNameChange"
                   />
                 </div>
               </div>
@@ -311,6 +312,12 @@ const pieStyle = (probability: number, isTop: boolean) => {
     background: `conic-gradient(${primary} 0% ${percent}%, ${secondary} ${percent}% 100%)`,
   };
 };
+
+const handleNameChange = () => {
+apiHit.value = false;
+  handleSubmit();
+};
+
 const handleSubmit = async () => {
   if (!name.value.trim()) return;
   showInsight.value = false;
